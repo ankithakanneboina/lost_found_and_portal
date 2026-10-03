@@ -171,44 +171,44 @@ The application uses authentication and authorization mechanisms to protect user
 
 ### 🔐 Login Page
 
-![Login Page](screenshots/Login.png)
+![Login Page](ScreenshotsLFP/Login.png)
 
 ---
 
 ### 📝 Registration Page
 
-![Registration Page](screenshots/signup.png)
+![Registration Page](ScreenshotsLFP/signup.png)
 
 ---
 
 ### 🔎 Lost & Found Dashboard
 
-![Dashboard](screenshots/Dashboard.png)
-![Dashboard](screenshots/Dashboard1.png)
+![Dashboard](ScreenshotsLFP/Dashboard.png)
+![Dashboard](ScreenshotsLFP/Dashboard1.png)
 
 ---
 
 ### 📌 Report Lost Item
 
-![Report Lost Item](screenshots/Matches.png)
+![Report Lost Item](ScreenshotsLFP/Matches.png)
 
 ---
 
 ### 📦 Report Found Item
 
-![Report Found Item](screenshots/matched.png)
+![Report Found Item](ScreenshotsLFP/matched.png)
 
 ---
 
 ### 🔍 Search Items
 
-![Search Items](screenshots/Browseitems.png)
+![Search Items](ScreenshotsLFP/Browseitems.png)
 
 ---
 
 ### 👤 User Notification
 
-![Profile](screenshots/notificationmatch.png)
+![Profile](ScreenshotsLFP/notificationmatch.png)
 
 ---
 
