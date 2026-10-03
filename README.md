@@ -1,501 +1,1076 @@
-# 🔍 Real-Time Lost & Found Portal — ML Powered
+# 🔎 Lost & Found Portal
 
-A full-stack web application that uses **Machine Learning** to automatically match lost and found items, with **real-time Socket.IO notifications**.
+A full-stack **Lost & Found Portal** designed to help users report lost items, post found items, search for items, and connect with other users to recover their belongings.
 
----
-
-## 🏗️ Architecture Overview
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    FRONTEND (React.js)                   │
-│  Home │ Login │ Register │ Report │ Browse │ Dashboard  │
-│               Tailwind CSS + Socket.IO Client           │
-└───────────────────────┬─────────────────────────────────┘
-                        │ HTTP / WebSocket
-┌───────────────────────▼─────────────────────────────────┐
-│               BACKEND (Flask + Socket.IO)               │
-│  /api/auth  │  /api/items  │  /api/matches  │ /api/admin│
-│           JWT Auth  │  File Upload  │  CORS            │
-└──────────┬────────────────────────┬────────────────────┘
-           │                        │
-┌──────────▼──────────┐  ┌──────────▼──────────────────┐
-│   MongoDB Database  │  │     ML Pipeline              │
-│  users              │  │  ┌─────────────────────────┐ │
-│  lost_items         │  │  │ MobileNetV2 (PyTorch)   │ │
-│  found_items        │  │  │ → 1280-dim feature vec  │ │
-│  matches            │  │  │ → Cosine similarity     │ │
-└─────────────────────┘  │  ├─────────────────────────┤ │
-                         │  │ TF-IDF + Sentence Trans │ │
-                         │  │ → Text similarity score │ │
-                         │  ├─────────────────────────┤ │
-                         │  │ Final Score             │ │
-                         │  │ = 55% image + 45% text  │ │
-                         │  └─────────────────────────┘ │
-                         └─────────────────────────────┘
-```
+The platform provides a centralized system for managing lost and found items with **user authentication, item management, search, image uploads, real-time communication, and secure access**.
 
 ---
 
-## 📁 Project Structure
+## 📌 Table of Contents
 
+- [Overview](#-overview)
+- [Problem Statement](#-problem-statement)
+- [Objectives](#-objectives)
+- [Key Features](#-key-features)
+- [Screenshots](#-screenshots)
+- [Demo Video](#-demo-video)
+- [Technology Stack](#-technology-stack)
+- [System Architecture](#-system-architecture)
+- [Project Structure](#-project-structure)
+- [Prerequisites](#-prerequisites)
+- [Installation & Setup](#-installation--setup)
+- [Environment Variables](#-environment-variables)
+- [Running the Application](#-running-the-application)
+- [Application Workflow](#-application-workflow)
+- [API Overview](#-api-overview)
+- [Database](#-database)
+- [Authentication & Security](#-authentication--security)
+- [Real-Time Communication](#-real-time-communication)
+- [Future Enhancements](#-future-enhancements)
+- [Applications](#-applications)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Author](#-author)
+
+---
+
+# 📖 Overview
+
+The **Lost & Found Portal** is a web-based application that provides a digital platform for reporting and recovering lost belongings.
+
+Users can:
+
+- Register and log in securely
+- Report lost items
+- Report found items
+- Upload item images
+- Search for lost/found items
+- View item details
+- Update or delete their own posts
+- Communicate with other users
+- Track item status
+- Manage their profile
+
+The application is designed to reduce the difficulty of finding lost belongings by bringing lost and found reports into one centralized platform.
+
+---
+
+# ❗ Problem Statement
+
+When people lose their belongings in colleges, workplaces, public places, or communities, finding them can be difficult because there is often no centralized platform for reporting and searching for lost items.
+
+Traditional methods such as:
+
+- Asking people individually
+- Posting in WhatsApp groups
+- Checking notice boards
+- Contacting security departments
+
+can be inefficient and difficult to track.
+
+The Lost & Found Portal provides a centralized digital solution where users can report, search, and communicate about lost and found items.
+
+---
+
+# 🎯 Objectives
+
+The main objectives of the project are:
+
+1. Provide a centralized platform for lost and found items.
+2. Allow users to create lost-item reports.
+3. Allow users to create found-item reports.
+4. Provide image-based item identification.
+5. Make item searching easier.
+6. Enable communication between users.
+7. Provide secure authentication.
+8. Maintain item information in a structured database.
+9. Reduce the time required to recover lost belongings.
+
+---
+
+# ✨ Key Features
+
+## 👤 User Authentication
+
+- User registration
+- User login
+- JWT-based authentication
+- Secure password handling
+- Protected routes
+- User profile management
+
+## 📌 Lost Item Reporting
+
+Users can report lost items by providing information such as:
+
+- Item name
+- Category
+- Description
+- Location
+- Date
+- Image
+- Contact information
+
+## 📦 Found Item Reporting
+
+Users who find an item can create a found-item report containing:
+
+- Item name
+- Category
+- Description
+- Found location
+- Date found
+- Image
+- Additional information
+
+## 🔎 Search & Filtering
+
+Users can search for items using different criteria such as:
+
+- Item name
+- Category
+- Location
+- Lost/Found status
+
+## 🖼️ Image Upload
+
+Users can upload images of lost or found items to make identification easier.
+
+## 💬 Real-Time Communication
+
+The portal supports real-time communication between users using WebSocket-based communication.
+
+This allows users to communicate regarding a reported item without relying entirely on external messaging platforms.
+
+## 📊 Item Management
+
+Users can:
+
+- Create posts
+- View posts
+- Update posts
+- Delete their posts
+- Track item status
+
+## 🔐 Secure Access
+
+The application uses authentication and authorization mechanisms to protect user data and restricted operations.
+
+---
+
+# 📸 Screenshots
+
+> Add your actual project screenshots inside the `screenshots` folder.
+
+### 🏠 Home Page
+
+![Home Page](ScreenshotsLFP/Home.png)
+![Home Page](ScreenshotsLFP/Home1.png)
+
+---
+
+### 🔐 Login Page
+
+![Login Page](screenshots/Login.png)
+
+---
+
+### 📝 Registration Page
+
+![Registration Page](screenshots/signup.png)
+
+---
+
+### 🔎 Lost & Found Dashboard
+
+![Dashboard](screenshots/Dashboard.png)
+![Dashboard](screenshots/Dashboard1.png)
+
+---
+
+### 📌 Report Lost Item
+
+![Report Lost Item](screenshots/Matches.png)
+
+---
+
+### 📦 Report Found Item
+
+![Report Found Item](screenshots/matched.png)
+
+---
+
+### 🔍 Search Items
+
+![Search Items](screenshots/Browseitems.png)
+
+---
+
+### 👤 User Notification
+
+![Profile](screenshots/notificationmatch.png)
+
+---
+
+# 🎥 Demo Video
+
+## Project Demonstration
+
+Watch the complete demonstration of the Lost & Found Portal:
+
+**▶️ Demo Video:**  
+[Click here to watch the project demo](https://www.youtube.com/watch?v=NTJgknb4H-U)
+
+> Replace `YOUR_DEMO_VIDEO_LINK` with your YouTube, Google Drive, or other publicly accessible demo video link.
+
+### Demo Covers
+
+The demonstration includes:
+
+1. User registration
+2. User login
+3. Dashboard
+4. Reporting a lost item
+5. Reporting a found item
+6. Uploading images
+7. Searching for items
+8. Viewing item details
+9. User-to-user communication
+10. Updating item information
+11. Deleting posts
+12. Logout
+
+---
+
+# 🛠️ Technology Stack
+
+## Frontend
+
+- React.js
+- JavaScript
+- HTML5
+- CSS3
+- Axios
+- React Router
+
+## Backend
+
+- Python
+- Flask
+- Flask-SocketIO
+- REST APIs
+- JWT Authentication
+
+## Database
+
+- MongoDB
+
+## Real-Time Communication
+
+- Socket.IO
+- WebSockets
+
+## Development Tools
+
+- Visual Studio Code
+- Git
+- GitHub
+- Postman
+- MongoDB
+
+---
+
+# 🏗️ System Architecture
+
+```text
+                    ┌──────────────────────┐
+                    │       User           │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │    React Frontend    │
+                    │                      │
+                    │  UI + Routing +      │
+                    │  API Communication   │
+                    └──────────┬───────────┘
+                               │
+                         HTTP / REST
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │    Flask Backend     │
+                    │                      │
+                    │ Authentication       │
+                    │ REST APIs            │
+                    │ Business Logic       │
+                    └──────────┬───────────┘
+                               │
+                ┌──────────────┴──────────────┐
+                │                             │
+                ▼                             ▼
+       ┌─────────────────┐          ┌─────────────────┐
+       │    MongoDB      │          │   Socket.IO     │
+       │                 │          │                 │
+       │ Users           │          │ Real-Time Chat  │
+       │ Items           │          │                 │
+       │ Reports         │          └─────────────────┘
+       └─────────────────┘
 ```
-lost-found-ml-portal/
-├── backend/
-│   ├── app.py                    # Flask app + Socket.IO setup
-│   ├── seed_data.py              # DB seed script
-│   ├── .env                      # Environment variables
-│   ├── requirements.txt
-│   ├── database/
-│   │   ├── __init__.py
-│   │   └── connection.py         # MongoDB connection + indexes
-│   ├── routes/
-│   │   ├── __init__.py
-│   │   ├── auth.py               # Register / Login / JWT
-│   │   ├── items.py              # Lost & Found item CRUD
-│   │   ├── matches.py            # ML matching + notifications
-│   │   └── admin.py              # Admin CRUD
-│   ├── ml_model/
-│   │   ├── __init__.py
-│   │   ├── image_matching.py     # MobileNetV2 CNN feature extraction
-│   │   ├── text_similarity.py    # TF-IDF + Sentence Transformers
-│   │   ├── matcher.py            # Combined scoring engine
-│   │   └── test_ml.py            # ML pipeline test script
-│   └── utils/
-│       └── helpers.py            # File save, serialization, pagination
+
+---
+
+# 📁 Project Structure
+
+```text
+lost-found-portal/
 │
-└── frontend/
-    ├── package.json
-    ├── tailwind.config.js
-    ├── postcss.config.js
-    ├── .env
-    └── src/
-        ├── App.js                # Router + providers
-        ├── index.js
-        ├── index.css             # Tailwind + custom styles
-        ├── context/
-        │   ├── AuthContext.js    # JWT auth state
-        │   └── NotifContext.js   # Real-time notifications state
-        ├── services/
-        │   ├── api.js            # Axios API client
-        │   └── socket.js         # Socket.IO client
-        ├── hooks/
-        │   └── useItemForm.js    # Shared form logic
-        ├── components/
-        │   ├── Navbar.js         # Navigation + notification bell
-        │   ├── ItemCard.js       # Item display card
-        │   ├── MatchCard.js      # ML match with score bars
-        │   ├── ImageDropzone.js  # Drag-and-drop image upload
-        │   └── StatsBar.js       # Live stats counters
-        └── pages/
-            ├── Home.js           # Landing page
-            ├── Login.js
-            ├── Register.js
-            ├── ReportLost.js
-            ├── ReportFound.js
-            ├── Browse.js         # Search + filter items
-            ├── Dashboard.js      # User's items
-            ├── Matches.js        # ML matches view
-            └── AdminPanel.js     # Admin dashboard
+├── backend/
+│   │
+│   ├── app.py
+│   ├── requirements.txt
+│   ├── .env
+│   │
+│   ├── routes/
+│   ├── models/
+│   ├── utils/
+│   └── uploads/
+│
+├── frontend/
+│   │
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── context/
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   │
+│   ├── package.json
+│   └── package-lock.json
+│
+├── screenshots/
+│   ├── home.png
+│   ├── login.png
+│   ├── register.png
+│   ├── dashboard.png
+│   ├── report-lost.png
+│   ├── report-found.png
+│   ├── search.png
+│   ├── chat.png
+│   └── profile.png
+│
+├── .gitignore
+└── README.md
+```
+
+> Adjust the structure above if your actual project folders are different.
+
+---
+
+# ⚙️ Prerequisites
+
+Before running the project, install:
+
+- Python 3.x
+- Node.js
+- npm
+- MongoDB
+- Git
+
+Check installed versions:
+
+```powershell
+python --version
+node --version
+npm --version
+mongod --version
 ```
 
 ---
 
-## ⚙️ Prerequisites
+# 🚀 Installation & Setup
 
-| Tool        | Version   | Install                          |
-|-------------|-----------|----------------------------------|
-| Python      | 3.10+     | https://python.org               |
-| Node.js     | 18+       | https://nodejs.org               |
-| MongoDB     | 6+        | https://mongodb.com/try/download |
-| pip         | latest    | `python -m pip install --upgrade pip` |
+## 1️⃣ Clone the Repository
+
+```powershell
+git clone YOUR_GITHUB_REPOSITORY_URL
+```
+
+Move into the project:
+
+```powershell
+cd lost-found-portal
+```
 
 ---
 
-## 🚀 Setup Instructions
+# 🐍 Backend Setup
 
-### Step 1 — Clone / Extract Project
+Open PowerShell:
 
-```bash
-cd lost-found-ml-portal
-```
-
-### Step 2 — Start MongoDB
-
-```bash
-# macOS/Linux (Homebrew)
-brew services start mongodb-community
-
-# Ubuntu/Debian
-sudo systemctl start mongod
-
-# Windows — run as a service or:
-"C:\Program Files\MongoDB\Server\6.0\bin\mongod.exe"
-
-# Verify it's running:
-mongosh --eval "db.runCommand({ connectionStatus: 1 })"
-```
-
-### Step 3 — Backend Setup
-
-```bash
+```powershell
 cd backend
-
-# Create virtual environment
-python -m venv venv
-
-# Activate
-# macOS/Linux:
-source venv/bin/activate
-# Windows:
-venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# This downloads ~800MB (PyTorch + MobileNetV2 weights)
-# Go get a coffee ☕ — this is a one-time download
 ```
 
-### Step 4 — Configure Environment
+Create a virtual environment:
 
-Edit `backend/.env` if needed (defaults work for local dev):
+```powershell
+python -m venv .venv
+```
+
+Activate it:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+If activation is successful, you should see:
+
+```text
+(.venv)
+```
+
+---
+
+## Install Backend Dependencies
+
+```powershell
+pip install -r requirements.txt
+```
+
+---
+
+# 🍃 MongoDB Setup
+
+Make sure MongoDB is running before starting the backend.
+
+If MongoDB is installed as a Windows service, start it using:
+
+```powershell
+net start MongoDB
+```
+
+Alternatively, run MongoDB manually using your installed MongoDB executable.
+
+The default MongoDB connection used by the application is:
+
+```text
+mongodb://127.0.0.1:27017/
+```
+
+---
+
+# 🔐 Environment Variables
+
+Create a `.env` file inside the `backend` directory.
+
+Example:
+
 ```env
-MONGO_URI=mongodb://localhost:27017/
+MONGO_URI=mongodb://127.0.0.1:27017/
 DB_NAME=lost_found_portal
-JWT_SECRET_KEY=change-this-in-production
+JWT_SECRET_KEY=change-this-secret-key
 PORT=5000
 ```
 
-### Step 5 — Seed Sample Data (Optional but recommended)
+### Environment Variable Description
 
-```bash
-# From backend/ with venv active:
-python seed_data.py
+| Variable | Description |
+|---|---|
+| `MONGO_URI` | MongoDB connection URL |
+| `DB_NAME` | MongoDB database name |
+| `JWT_SECRET_KEY` | Secret key used for JWT authentication |
+| `PORT` | Backend server port |
+
+⚠️ Never upload your real `.env` file to GitHub.
+
+Add it to `.gitignore`:
+
+```text
+.env
+.venv/
+__pycache__/
+node_modules/
 ```
 
-This creates:
-- 4 test users (login: `alice@example.com` / `password123`)
-- 6 lost items + 4 found items with descriptions
-- Pre-computed ML matches
+---
 
-### Step 6 — Test the ML Pipeline
+# ▶️ Running the Backend
 
-```bash
-python ml_model/test_ml.py
-```
+From the backend directory:
 
-Expected output:
-```
-✅ Text similarity PASSED
-✅ Image features PASSED
-✅ Matcher PASSED
-```
-
-### Step 7 — Start Backend Server
-
-```bash
+```powershell
 python app.py
-# → Running on http://localhost:3000
-# → Socket.IO ready
 ```
 
-### Step 8 — Frontend Setup
+The backend should run on:
 
-```bash
-# New terminal window:
+```text
+http://localhost:5000
+```
+
+---
+
+# ⚛️ Frontend Setup
+
+Open another PowerShell terminal.
+
+Navigate to the frontend:
+
+```powershell
+cd lost-found-portal
 cd frontend
+```
+
+Install dependencies:
+
+```powershell
 npm install
-npm start
-# → Opens http://localhost:3000
+```
+
+Start the development server:
+
+```powershell
+npm run dev
+```
+
+If your project uses another start command, use the command specified in `package.json`.
+
+The frontend will usually be available at:
+
+```text
+http://localhost:5173
 ```
 
 ---
 
-## 🎯 How to Use
+# 🔄 Running the Complete Application
 
-### Register & Login
-1. Visit `http://localhost:3000`
-2. Click **Sign Up** → create account
-3. Or use seed credentials: `alice@example.com` / `password123`
+You need to run the services separately.
 
-### Report a Lost Item
-1. Click **Report Lost** in nav
-2. Fill in item name, category, description, location, date
-3. Upload a photo (enables CNN image matching)
-4. Submit → ML matching runs automatically in background
+### Terminal 1 — MongoDB
 
-### Report a Found Item
-1. Click **Report Found**
-2. Fill in details + upload photo
-3. Submit → system immediately compares against all lost items
-4. If score ≥ 60%, a match is created and the lost item owner gets a **real-time notification**
-
-### View Matches
-1. Click **Matches** in nav
-2. See all ML-matched pairs with score breakdown:
-   - 📸 Image Similarity (MobileNetV2 cosine similarity)
-   - 📝 Text Similarity (TF-IDF + Sentence Transformers)
-   - ⚡ Final Score (55% image + 45% text)
-3. Click **Submit Claim Request** to connect with the other party
-
-### Notifications
-- The 🔔 bell in the navbar shows real-time Socket.IO notifications
-- You'll see alerts like: *"🎯 Potential match found! 82.5% similarity"*
-
-### Admin Panel
-1. Create admin account via API:
-```bash
-curl -X POST http://localhost:5000/api/admin/create-admin \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Admin","email":"admin@portal.com","password":"admin123"}'
+```text
+MongoDB
 ```
-2. Login with admin credentials
-3. Visit `/admin` to manage all items, view matches, moderate content
+
+### Terminal 2 — Backend
+
+```powershell
+cd backend
+.\.venv\Scripts\Activate.ps1
+python app.py
+```
+
+### Terminal 3 — Frontend
+
+```powershell
+cd frontend
+npm run dev
+```
+
+Then open the frontend URL in your browser.
 
 ---
 
-## 🤖 ML Pipeline Explained
+# 🔁 Application Workflow
 
-### Image Matching (55% weight)
-
-```
-Input Image
-    ↓
-OpenCV preprocessing
-(denoise, color convert)
-    ↓
-PIL Image → Tensor (224×224, normalized)
-    ↓
-MobileNetV2 (pretrained ImageNet weights)
-    ↓
-Remove classification head
-    ↓
-1280-dimensional feature vector
-    ↓
-Stored in MongoDB as featureVector[]
-    ↓
-Cosine Similarity between two vectors
-= dot(v1, v2) / (|v1| × |v2|)
-    ↓
-Normalized to [0, 1]
-```
-
-### Text Matching (45% weight)
-
-```
-Item fields: name × 3, category × 2, description, location
-    ↓
-Preprocessing: lowercase, remove punctuation, normalize whitespace
-    ↓
-TF-IDF Vectorizer (bigrams, sublinear_tf=True)
-    ↓
-Cosine Similarity between TF-IDF vectors (40%)
-    +
-Sentence Transformers: all-MiniLM-L6-v2 (50%)
-    +
-Category exact match bonus (+10%)
-    ↓
-Combined text similarity score [0, 1]
-```
-
-### Scoring
-
-```
-finalScore = (imageSim × 0.55) + (textSim × 0.45)
-
-If finalScore ≥ 0.60 (60%):
-  → Create match record in MongoDB
-  → Emit Socket.IO event to lost item owner's room
-  → Owner sees real-time notification
+```text
+User
+ │
+ ▼
+Register / Login
+ │
+ ▼
+Authentication
+ │
+ ▼
+Dashboard
+ │
+ ├───────────────┐
+ │               │
+ ▼               ▼
+Report Lost    Report Found
+ │               │
+ └───────┬───────┘
+         ▼
+      Database
+         │
+         ▼
+ Search / Filter
+         │
+         ▼
+ View Item
+         │
+         ▼
+ Contact User
+         │
+         ▼
+ Real-Time Chat
+         │
+         ▼
+ Item Recovered
 ```
 
 ---
 
-## 🌐 API Endpoints
+# 🔌 API Overview
 
-### Auth
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/register` | Create account |
-| POST | `/api/auth/login` | Login → JWT token |
-| GET | `/api/auth/me` | Get current user |
-| PUT | `/api/auth/update-profile` | Update profile |
+The backend provides REST APIs for application functionality.
+
+Typical API operations include:
+
+### Authentication
+
+```text
+POST /api/register
+POST /api/login
+```
 
 ### Items
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/items/lost` | Report lost item (multipart) |
-| POST | `/api/items/found` | Report found item (multipart) |
-| GET | `/api/items/lost` | List lost items (pagination, search) |
-| GET | `/api/items/found` | List found items |
-| GET | `/api/items/my-items` | Current user's items |
-| PUT | `/api/items/lost/:id/resolve` | Mark as resolved |
-| GET | `/api/items/images/:filename` | Serve uploaded image |
 
-### Matches
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/matches/` | Get my matches |
-| GET | `/api/matches/all` | All matches (paginated) |
-| GET | `/api/matches/stats` | Platform statistics |
-| POST | `/api/matches/:id/claim` | Submit claim |
+```text
+GET    /api/items
+POST   /api/items
+GET    /api/items/<id>
+PUT    /api/items/<id>
+DELETE /api/items/<id>
+```
 
-### Admin (requires admin JWT)
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/admin/dashboard` | Admin stats |
-| GET | `/api/admin/items/lost` | All lost items |
-| GET | `/api/admin/items/found` | All found items |
-| DELETE | `/api/admin/items/lost/:id` | Delete lost item |
-| DELETE | `/api/admin/items/found/:id` | Delete found item |
-| GET | `/api/admin/users` | All users |
+### User
+
+```text
+GET /api/profile
+PUT /api/profile
+```
+
+> Update these endpoint names if your actual Flask routes use different paths.
 
 ---
 
-## 🔌 Socket.IO Events
+# 🗄️ Database
 
-| Event | Direction | Payload |
-|-------|-----------|---------|
-| `connect` | Client → Server | — |
-| `join` | Client → Server | `{ userId: string }` |
-| `match_notification` | Server → Client | `{ type, matchId, score, lostItem, foundItem, message }` |
+The project uses **MongoDB** as its database.
+
+The main database is:
+
+```text
+lost_found_portal
+```
+
+Possible collections include:
+
+```text
+users
+items
+messages
+```
+
+### Users
+
+Stores user-related information such as:
+
+- User ID
+- Name
+- Email
+- Password hash
+- Profile information
+
+### Items
+
+Stores information about:
+
+- Item name
+- Category
+- Description
+- Location
+- Date
+- Image
+- Lost/Found status
+- User information
+
+### Messages
+
+Stores or manages communication-related information between users when applicable.
 
 ---
 
-## 📊 Database Schema (MongoDB)
+# 🔐 Authentication & Security
 
-### users
-```json
-{
-  "_id": "ObjectId",
-  "name": "string",
-  "email": "string (unique)",
-  "password": "bcrypt hash",
-  "phone": "string",
-  "role": "user | admin",
-  "createdAt": "ISODate"
-}
-```
+The application implements authentication using **JSON Web Tokens (JWT)**.
 
-### lost_items / found_items
-```json
-{
-  "_id": "ObjectId",
-  "userId": "string",
-  "itemName": "string",
-  "description": "string",
-  "category": "string",
-  "location": "string",
-  "dateLost/dateFound": "string",
-  "contact": "string",
-  "image": "filename | null",
-  "featureVector": "[float × 1280] | null",
-  "status": "active | resolved",
-  "createdAt": "ISODate"
-}
-```
+Security-related features include:
 
-### matches
-```json
-{
-  "_id": "ObjectId",
-  "lostItemId": "string",
-  "foundItemId": "string",
-  "lostUserId": "string",
-  "foundUserId": "string",
-  "imageSimilarity": "float [0-1]",
-  "textSimilarity": "float [0-1]",
-  "finalScore": "float [0-1]",
-  "status": "pending | claimed",
-  "createdAt": "ISODate"
-}
-```
+- JWT authentication
+- Protected API routes
+- Password hashing
+- Authorization checks
+- Environment variables for sensitive configuration
+- User-specific access to protected operations
+
+Users should not be able to modify or delete another user's posts unless the application explicitly provides such functionality.
 
 ---
 
-## 🔧 Configuration
+# 💬 Real-Time Communication
 
-### Tuning the Match Threshold
+The application uses **Socket.IO / WebSocket-based communication** to support real-time interaction.
 
-In `backend/ml_model/matcher.py`:
-```python
-MATCH_THRESHOLD = 0.60  # Lower = more matches, Higher = more precise
-IMAGE_WEIGHT = 0.55     # Weight for image similarity
-TEXT_WEIGHT  = 0.45     # Weight for text similarity
-```
+This enables users to communicate about lost and found items without needing to continuously refresh the page.
 
-### Changing the ML Model
+### Communication Flow
 
-In `backend/ml_model/image_matching.py`, swap MobileNetV2 for ResNet50:
-```python
-# Replace:
-full_model = models.mobilenet_v2(weights=models.MobileNet_V2_Weights.IMAGENET1K_V1)
-_model = torch.nn.Sequential(*list(full_model.children())[:-1])
-
-# With:
-full_model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)
-_model = torch.nn.Sequential(*list(full_model.children())[:-1])
-# Note: ResNet50 outputs 2048-dim vectors instead of 1280
+```text
+User A
+   │
+   │ Message
+   ▼
+Socket.IO
+   │
+   ▼
+Backend
+   │
+   ▼
+Socket.IO
+   │
+   ▼
+User B
 ```
 
 ---
 
-## 🐛 Troubleshooting
+# 📱 Responsive Design
 
-**MongoDB connection refused**
+The frontend is designed to provide a user-friendly experience across different screen sizes.
+
+The portal can be used on:
+
+- 💻 Desktop
+- 💻 Laptop
+- 📱 Mobile devices
+- 📟 Tablets
+
+---
+
+# 🌍 Real-World Applications
+
+The Lost & Found Portal can be implemented in:
+
+### 🎓 Colleges & Universities
+
+Students can report:
+
+- ID cards
+- Books
+- Laptops
+- Mobile phones
+- Bags
+- Keys
+
+### 🏢 Offices
+
+Employees can report:
+
+- Documents
+- ID cards
+- Electronic devices
+- Personal belongings
+
+### 🏥 Hospitals
+
+Patients and staff can report lost belongings.
+
+### 🚉 Public Places
+
+The system can potentially be adapted for:
+
+- Bus stations
+- Railway stations
+- Airports
+- Shopping malls
+- Public events
+
+---
+
+# 🌟 Benefits
+
+- Centralized lost & found management
+- Faster item discovery
+- Easy reporting
+- Image-based identification
+- Search and filtering
+- Real-time communication
+- Secure user authentication
+- Reduced dependency on manual reporting
+
+---
+
+# 🔮 Future Enhancements
+
+The project can be further enhanced with:
+
+- 🤖 AI-based image matching
+- 📍 GPS/location-based search
+- 🔔 Push notifications
+- 📧 Email notifications
+- 📱 Mobile application
+- 🧠 Smart item matching
+- 🏫 College-specific portals
+- 🛡️ Admin moderation dashboard
+- 📊 Analytics dashboard
+- ☁️ Cloud deployment
+- 🔎 Advanced search
+- 🏷️ QR-based item identification
+
+---
+
+# 📈 Future AI-Based Matching
+
+An advanced version of the system can compare images and descriptions of lost and found objects.
+
+Example:
+
+```text
+Lost Item
+   │
+   ▼
+Image + Description
+   │
+   ▼
+AI Matching System
+   │
+   ▼
+Potential Found Items
+   │
+   ▼
+Similarity Score
+   │
+   ▼
+User Notification
+```
+
+This can help users identify potentially matching lost and found items more efficiently.
+
+---
+
+# 🧪 Testing
+
+The application can be tested using:
+
+- Browser testing
+- REST API testing
+- Postman
+- MongoDB database inspection
+- Authentication testing
+- Form validation testing
+- Real-time communication testing
+
+Important test cases include:
+
+- Successful registration
+- Invalid login
+- Valid login
+- Creating a lost item
+- Creating a found item
+- Image upload
+- Search functionality
+- Updating posts
+- Deleting posts
+- Unauthorized access
+- Real-time messaging
+
+---
+
+# 🐛 Troubleshooting
+
+## Backend does not start
+
+Check whether the virtual environment is activated:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+Then install dependencies:
+
+```powershell
+pip install -r requirements.txt
+```
+
+---
+
+## MongoDB connection error
+
+Make sure MongoDB is running.
+
+Check the MongoDB URI in `.env`:
+
+```env
+MONGO_URI=mongodb://127.0.0.1:27017/
+```
+
+---
+
+## Frontend dependencies error
+
+Run:
+
+```powershell
+npm install
+```
+
+Then:
+
+```powershell
+npm run dev
+```
+
+---
+
+## Port already in use
+
+Check whether another application is already using the backend/frontend port.
+
+Stop the previous server and restart the application.
+
+---
+
+# 📂 Screenshots Folder
+
+Create the following folder:
+
+```text
+screenshots/
+```
+
+Recommended screenshots:
+
+```text
+screenshots/
+│
+├── home.png
+├── login.png
+├── register.png
+├── dashboard.png
+├── report-lost.png
+├── report-found.png
+├── search.png
+├── item-details.png
+├── chat.png
+└── profile.png
+```
+
+Then GitHub will automatically display them in the README.
+
+---
+
+# 🎥 Adding Your Demo Video
+
+For a YouTube video, use:
+
+```markdown
+## 🎥 Demo Video
+
+[▶️ Watch the Complete Project Demo](YOUR_YOUTUBE_LINK)
+```
+
+For example:
+
+```markdown
+## 🎥 Demo Video
+
+[▶️ Watch Lost & Found Portal Demo](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
+```
+
+---
+
+# ⭐ Project Highlights
+
+```text
+✔ Full-Stack Web Application
+✔ React Frontend
+✔ Flask Backend
+✔ MongoDB Database
+✔ JWT Authentication
+✔ REST APIs
+✔ Image Upload
+✔ Search & Filtering
+✔ Real-Time Communication
+✔ User Profile Management
+✔ Lost & Found Item Management
+```
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome.
+
+To contribute:
+
+1. Fork the repository.
+2. Create a new branch.
+
 ```bash
-sudo systemctl start mongod  # Linux
-brew services start mongodb-community  # macOS
+git checkout -b feature/new-feature
 ```
 
-**PyTorch install fails on M1 Mac**
+3. Make your changes.
+4. Commit the changes.
+
 ```bash
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+git commit -m "Add new feature"
 ```
 
-**Port 5000 in use (macOS AirPlay)**
+5. Push the branch.
+
 ```bash
-# Edit backend/.env:
-PORT=5001
-# Edit frontend/.env:
-REACT_APP_API_URL=http://localhost:5001/api
-REACT_APP_SOCKET_URL=http://localhost:5001
+git push origin feature/new-feature
 ```
 
-**CORS errors**
-Ensure `REACT_APP_API_URL` in `frontend/.env` matches the Flask server address exactly.
-
-**Sentence Transformers slow on first run**
-The `all-MiniLM-L6-v2` model (~90MB) is downloaded on first use and cached. Subsequent runs are instant.
+6. Create a Pull Request.
 
 ---
 
-## 🔐 Security Notes for Production
+# 📄 License
 
-1. Change `JWT_SECRET_KEY` to a strong random string
-2. Set `MONGO_URI` to a secured MongoDB Atlas connection string
-3. Enable HTTPS / WSS
-4. Remove `/api/admin/create-admin` endpoint (one-time use only)
-5. Add rate limiting with `flask-limiter`
-6. Store uploaded images in S3 instead of local filesystem
+This project is created for educational and portfolio purposes.
+
+You may modify and extend the project according to your requirements.
 
 ---
 
-## 📦 Tech Stack Summary
+# 👩‍💻 Author
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18, Tailwind CSS, React Router v6 |
-| Real-time | Socket.IO (client + server) |
-| HTTP Client | Axios |
-| Backend | Python Flask 3, Flask-SocketIO |
-| Auth | JWT (flask-jwt-extended), bcrypt |
-| Database | MongoDB + PyMongo |
-| ML – Images | PyTorch, MobileNetV2, OpenCV, Pillow |
-| ML – Text | scikit-learn TF-IDF, Sentence Transformers |
-| Similarity | Cosine similarity (sklearn) |
+## Ankitha Kanneboina
+
+**B.Tech – Computer Science and Engineering**
+
+Interested in:
+
+- Artificial Intelligence
+- Machine Learning
+- Full-Stack Development
+- Web Technologies
+- Software Development
+
+### Connect With Me
+
+- GitHub: [Ankitha Kanneboina](https://github.com/ankithakanneboina)
+- LinkedIn: [Ankitha Kanneboina](https://www.linkedin.com/in/ankitha-kanneboina-45a545324/)
 
 ---
 
-Built with ❤️  — Lost & Found Portal ML
+# ⭐ If You Like This Project
+
+If you find this project useful, consider giving the repository a ⭐ on GitHub.
+
+---
+
+## 🚀 Lost & Found Portal
+
+**Report. Search. Connect. Recover.**
+
+A centralized digital platform designed to make finding lost belongings easier and more efficient.
