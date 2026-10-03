@@ -165,7 +165,7 @@ The application uses authentication and authorization mechanisms to protect user
 ### 🏠 Home Page
 
 ![Home Page](ScreenshotsLFP/Home.png)
-![Home Page](ScreenshotsLFP/Home1.png)
+![Home Page](ScreenshotsLFP/Home2.png)
 
 ---
 
